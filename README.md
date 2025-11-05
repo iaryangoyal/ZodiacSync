@@ -1,90 +1,72 @@
-# ZodiacSync
-Step 1: Clarify Vision & Positioning
+# 🪔 ZodiacSync – Your Personal AI Pandit
 
-Core Idea: Replace/reduce dependency on visiting a traditional Hindu pandit by providing AI-driven guidance.
+> *Bringing ancient Vedic wisdom into the modern digital age.*  
+> *AI-driven guidance for your daily life, based on Hindu astrology and Panchang.*
 
-Target User: Young urban Indians (18–35) who believe in astrology but prefer tech-friendly, on-demand interactions.
+---
 
-Differentiator: Instant, private, personalized. No judgment. Blends tradi tion with modern AI.
+## 🌟 Vision
 
-Step 2: Requirements Gathering
+**ZodiacSync** replaces (or complements) the traditional Hindu *pandit* experience with an AI-powered guide.  
+It blends **Jyotish Shastra (Vedic astrology)**, **astronomical precision**, and **LLM reasoning** to offer instant, private, and personalized insights — anytime, anywhere.
 
-Let’s break it down into MVP features vs future features.
+### 💬 Tagline
+> “Sacred guidance, simplified by AI.”
 
-🎯 MVP Features
+---
 
-Daily Panchang / Horoscope → Sunrise, Tithi, Nakshatra, etc.
+## 🎯 Target Audience
 
-Personal Birth Chart (Janma Kundali) → Based on date, time, place.
+**Young urban Indians (18–35)** who:
+- Believe in astrology and spirituality  
+- Prefer tech-friendly, private, on-demand experiences  
+- Seek daily guidance without formal rituals or appointments  
 
-Simple Queries → “When should I do puja for this?” / “Is this a good time for new beginnings?”
+---
 
-Ritual Reminders → Ekadashi fasting, Muhurat for events.
+## 💎 Differentiator
 
-Conversational AI → User chats with a bot instead of a pandit.
+| Traditional Pandit | ZodiacSync |
+|--------------------|-------------|
+| Limited access | 24/7 AI availability |
+| Judgmental / biased | 100% neutral and private |
+| Manual charting | Instant AI-generated Kundali |
+| Vedic-only | Blends tradition + modern data-driven insights |
 
-🚀 Future Features
+---
 
-Voice interaction (feels like talking to a pandit).
+## 🚀 MVP Features (Phase 1)
 
-Personalized ritual recommendations.
+| Feature | Description |
+|----------|--------------|
+| 🗓️ **Daily Panchang / Horoscope** | Displays sunrise, Tithi, Nakshatra, Yoga, Karana, Rahu Kaal, etc. |
+| 🧭 **Personal Birth Chart (Janma Kundali)** | Generates Kundali from date, time, and place of birth. |
+| 💬 **Conversational AI (Chatbot)** | Ask: “When should I do puja?” / “Is today good for new beginnings?” |
+| 🔔 **Ritual Reminders** | Notifications for Ekadashi, Sankranti, Purnima, etc. |
+| 🧘‍♂️ **AI Guidance** | Personalized responses powered by GPT-5 and a Vedic knowledge base. |
 
-Community features (matchmaking, astrology compatibility).
+---
 
-Integration with temple services (puja booking, donations).
+## 🌈 Future Features (Phase 2+)
 
-Mobile app (Android first → India market).
+- 🔮 **Predictive Insights**: Personal yearly/monthly forecasts  
+- 💑 **Kundali Milan**: Relationship compatibility analysis  
+- 🕉️ **AI Puja Assistant**: Voice-guided rituals and mantras  
+- 🪔 **Muhurat Finder**: Auspicious timing suggestions for events  
+- 📿 **Mantra Recommendations**: Based on current planetary positions  
+- 💰 **Premium Tier**: Access to deeper insights or live astrologer chat  
 
-Step 3: Tech Stack (Initial Proposal)
+---
 
-Frontend:
+## 🧩 Tech Architecture Overview
 
-MVP: Web app (React/Next.js).
-
-Later: Mobile app (React Native / Flutter).
-
-Backend:
-
-Python (FastAPI) → lightweight, async, great for ML integration.
-
-Postgres (for user profiles, birth data, chat logs).
-
-Redis (for caching panchang/horoscope data).
-
-AI Layer:
-
-Use GPT (like me) with custom fine-tuning / prompt engineering for astrology + Vedic texts.
-
-Optionally: Train a smaller model (LLM) on Panchang, shlokas, rituals for offline/local reasoning.
-
-Astrology API/Data Sources:
-
-Swiss Ephemeris (for planetary positions).
-
-Open-source Panchang libraries (e.g., astronomy-engine, pyswisseph).
-
-Custom wrapper API for daily tithi, nakshatra, yoga, karana.
-
-Step 4: Immediate Next Steps
-
-Define MVP Scope → What exactly do we want in V1? (Daily panchang + chat-based kundali Q&A?)
-
-Repo Setup → Decide monorepo vs multi-repo. Add FastAPI skeleton + React skeleton.
-
-Data Collection → Integrate Swiss Ephemeris and generate daily panchang from it.
-
-Bot Personality Design → Tone of voice (respectful, spiritual, yet tech-friendly).
-
-Wireframes → Mock simple UI (chat + horoscope card).
-
-Step 5: Business/Branding
-
-Brand Angle: “Your AI Pandit – Always there, always wise, no judgment.”
-
-Monetization Ideas:
-
-Freemium (daily horoscope free, detailed kundali reports paid).
-
-Subscription (₹99–199/month).
-
-Ritual/Puja marketplace.
+```mermaid
+flowchart TD
+    A[User Chat / Query] --> B[Frontend (React Native)]
+    B --> C[Backend API (FastAPI / Node)]
+    C --> D[LLM Layer (GPT-5)]
+    D --> E[Vector DB (Astrology Knowledge Base)]
+    D --> F[Knowledge Graph (Planet ↔ House ↔ Effect)]
+    C --> G[Panchang Engine (Ephemeris / AstroPy)]
+    D --> H[Response Generator]
+    H --> A
