@@ -1,0 +1,11 @@
+.git
+.env
+venv
+__pycache__
+*.pyc
+.DS_Store
+chroma_db
+zodiac_sync.db
+*.sqlite
+*.sqlite3
+run

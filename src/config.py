@@ -35,3 +35,8 @@ def get_required_env(name: str) -> str:
         raise RuntimeError(f"{name} is not configured.")
 
     return value
+
+
+def get_optional_env(name: str, default: str | None = None) -> str | None:
+    load_environment()
+    return os.getenv(name, default)
