@@ -3,6 +3,8 @@ import os
 from pydantic import BaseModel
 from src.ai_engine.knowledge.store import retrieve_context
 from src.ai_engine.ai_service import generate_response
+from fastapi.middleware.cors import CORSMiddleware
+
 
 class ChatRequest(BaseModel):
     message: str
@@ -15,6 +17,14 @@ app = FastAPI(
     title="ZodiacSync API",
     version="0.1.0",
     description="AI-Powered Vedic Astrology and Panchang API"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost", "http://127.0.0.1"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
 @app.get("/")
@@ -34,19 +44,21 @@ def chat(req: ChatRequest):
         chat_history_store[user_id] = []
 
     history = chat_history_store[user_id]
-    print(history)
-    # 🔍 retrieve knowledge
-    context = retrieve_context(req.message)
+    try:
+        # 🔍 retrieve knowledge
+        context = retrieve_context(req.message)
 
-    # 🤖 generate response
-    response = generate_response(
-        query=req.message,
-        context=context,
-        history=history
-    )
+        # 🤖 generate response
+        response = generate_response(
+            query=req.message,
+            context=context,
+            history=history
+        )
 
-    # 💾 store chat
-    history.append({"role": "user", "content": req.message})
-    history.append({"role": "assistant", "content": response})
+        # 💾 store chat
+        history.append({"role": "user", "content": req.message})
+        history.append({"role": "assistant", "content": response})
 
-    return {"response": response}
+        return {"response": response}
+    except Exception:
+        return {"error": "Internal server error. Please try again later."}
