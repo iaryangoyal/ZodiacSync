@@ -1,87 +1,70 @@
 import logging
 import sys
-from collections import defaultdict
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from fastapi import FastAPI, HTTPException, Request
-from pydantic import BaseModel
-from src.ai_engine.knowledge.store import retrieve_context
-from src.ai_engine.ai_service import generate_response
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
+from src.backend.database import init_db
+from src.backend.routes import auth, chat, health
+from src.config import PROJECT_ROOT as CONFIG_PROJECT_ROOT, get_optional_env
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class ChatRequest(BaseModel):
-    message: str
-    user_id: str | None = None
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    logger.info("Database initialized.")
+    yield
 
 
-MAX_HISTORY_MESSAGES = 20
-chat_history_store: dict[str, list[dict[str, str]]] = defaultdict(list)
+def get_cors_origins() -> list[str]:
+    raw_origins = get_optional_env("BACKEND_CORS_ORIGINS", "")
+    return [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
 
 
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title="ZodiacSync API",
+        version="0.2.0",
+        description="AI-Powered Vedic Astrology and Panchang API",
+        lifespan=lifespan,
+    )
 
-app = FastAPI(
-    title="ZodiacSync API",
-    version="0.1.0",
-    description="AI-Powered Vedic Astrology and Panchang API"
-)
+    cors_origins = get_cors_origins()
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_origin_regex=r"^http://(localhost|127\.0\.0\.1)(:\d+)?$" if not cors_origins else None,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origin_regex=r"^http://(localhost|127\.0\.0\.1)(:\d+)?$",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
+    @app.get("/")
+    def root():
+        return {"message": "Welcome to ZodiacSync API"}
 
-@app.get("/")
-def root():
-    return {"message": "🪔 Welcome to ZodiacSync API — AI Pandit is alive!"}
+    app.include_router(health.router)
+    app.include_router(auth.router)
+    app.include_router(chat.router)
+
+    frontend_dir = CONFIG_PROJECT_ROOT / "frontend"
+    if frontend_dir.exists():
+        app.mount("/app", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+
+    return app
 
 
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-@app.post("/chat")
-def chat(req: ChatRequest, request: Request):
-    message = req.message.strip()
-    if not message:
-        raise HTTPException(status_code=400, detail="Message cannot be empty.")
-
-    client_host = request.client.host if request.client else "anonymous"
-    user_id = req.user_id or client_host
-    history = chat_history_store[user_id]
-
-    try:
-        # 🔍 retrieve knowledge
-        context = retrieve_context(message)
-
-        # 🤖 generate response
-        response = generate_response(
-            query=message,
-            context=context,
-            history=history
-        )
-
-        # 💾 store chat
-        history.append({"role": "user", "content": message})
-        history.append({"role": "assistant", "content": response})
-        del history[:-MAX_HISTORY_MESSAGES]
-
-        return {"response": response}
-    except Exception as exc:
-        logger.exception("Chat request failed")
-        raise HTTPException(
-            status_code=500,
-            detail="Internal server error. Please try again later."
-        ) from exc
+app = create_app()
 
 
 if __name__ == "__main__":

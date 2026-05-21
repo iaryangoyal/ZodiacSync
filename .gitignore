@@ -19,3 +19,8 @@ __pycache__/
 .env
 run
 chroma_db/
+zodiac_sync.db
+*.sqlite
+*.sqlite3
+.pytest_cache/
+.coverage

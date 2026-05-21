@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ZodiacSync</title>
+    <link rel="stylesheet" href="/app/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="panel auth-panel" id="authPanel">
+        <div>
+          <p class="eyebrow">ZodiacSync</p>
+          <h1>AI Pandit Console</h1>
+          <p class="subtle">Sign in to keep your readings and chat history connected to your account.</p>
+        </div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab active" id="loginTab" type="button">Login</button>
+          <button class="tab" id="registerTab" type="button">Register</button>
+        </div>
+
+        <form id="authForm" class="form">
+          <label class="field" id="nameField">
+            <span>Full name</span>
+            <input id="fullName" autocomplete="name" placeholder="Aryan Sharma" />
+          </label>
+
+          <label class="field">
+            <span>Email</span>
+            <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+          </label>
+
+          <label class="field">
+            <span>Password</span>
+            <input id="password" type="password" autocomplete="current-password" minlength="8" required />
+          </label>
+
+          <button class="primary" id="authSubmit" type="submit">Login</button>
+          <p class="status" id="authStatus"></p>
+        </form>
+      </section>
+
+      <section class="panel chat-panel hidden" id="chatPanel">
+        <header class="chat-header">
+          <div>
+            <p class="eyebrow">Signed in</p>
+            <h2 id="userName">Your readings</h2>
+          </div>
+          <button class="ghost" id="logoutBtn" type="button">Logout</button>
+        </header>
+
+        <div class="chat-layout">
+          <aside class="sessions">
+            <button class="secondary" id="newChatBtn" type="button">New chat</button>
+            <div id="sessionList" class="session-list"></div>
+          </aside>
+
+          <section class="conversation">
+            <div class="messages" id="messages"></div>
+            <form class="composer" id="chatForm">
+              <input id="messageInput" placeholder="Ask about timing, rituals, career, relationships..." required />
+              <button class="primary" type="submit">Send</button>
+            </form>
+            <p class="status" id="chatStatus"></p>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app/app.js"></script>
+  </body>
+</html>
