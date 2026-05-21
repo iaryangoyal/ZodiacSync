@@ -1,16 +1,21 @@
 from openai import OpenAI
-import os
-from dotenv import load_dotenv
+from src.config import get_required_env
 
-load_dotenv()
+client: OpenAI | None = None
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+def get_client() -> OpenAI:
+    global client
+
+    if client is not None:
+        return client
+
+    client = OpenAI(api_key=get_required_env("OPENAI_API_KEY"))
+    return client
 
 def get_embedding(text: str):
-    response = client.embeddings.create(
+    response = get_client().embeddings.create(
         model="text-embedding-3-small",
         input=text
     )
-    emb = response.data[0].embedding
-    print("Embedding length:", len(emb)) 
-    return emb
+    return response.data[0].embedding
